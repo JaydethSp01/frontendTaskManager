@@ -7,7 +7,7 @@ Este proyecto es un frontend desarrollado con **React.js** y **Vite**, diseñado
 - **Diseño Responsivo**: Interfaz atractiva y funcional en dispositivos móviles y de escritorio.
 - **Gestión de Tareas**: Crear, listar, actualizar y eliminar tareas con facilidad.
 - **Cambio de Estado Adaptativo**:
-  - En dispositivos de escritorio, se utiliza la funcionalidad de "drag and drop" para cambiar el estado de las tareas.
+  - En dispositivos de escritorio, se utiliza la funcionalidad de "drag and drop" para cambiar el estado de las tareas y tambien el boton
   - En dispositivos móviles, se sustituye esta funcionalidad por un botón que aparece al seleccionar una tarea, permitiendo cambiar su estado directamente.
 - **Integración API**: Comunicación fluida con el backend mediante peticiones HTTP.
 - **Uso de Context API**: Manejo eficiente del estado global.
@@ -105,7 +105,7 @@ http://localhost:5173
 
 ### Cambiar el Estado de una Tarea
 
-- **En escritorio**: Arrastra la tarea entre las columnas de "Pendientes" y "Completadas".
+- **En escritorio**: Arrastra la tarea entre las columnas de "Pendientes" y "Completadas", o usar los botones de cambiarssssss
 - **En móvil**: Selecciona la tarea tocándola. Aparecerá un botón en la parte inferior que permite cambiar su estado entre "Pendiente" y "Completada".
 
 ### Editar una Tarea

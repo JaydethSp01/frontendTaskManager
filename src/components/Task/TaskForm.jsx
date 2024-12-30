@@ -8,6 +8,9 @@ const TaskForm = ({ task, onSave, onCancel, isOpen }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
 
+  const TITLE_LIMIT = 100;
+  const DESCRIPTION_LIMIT = 300;
+
   useEffect(() => {
     if (task) {
       setFormData({
@@ -24,12 +27,15 @@ const TaskForm = ({ task, onSave, onCancel, isOpen }) => {
     const newErrors = {};
     if (!formData.title.trim()) {
       newErrors.title = "El título es requerido";
-    } else if (formData.title.length > 100) {
-      newErrors.title = "El título no puede exceder 100 caracteres";
+    } else if (formData.title.length > TITLE_LIMIT) {
+      newErrors.title = `El título no puede exceder ${TITLE_LIMIT} caracteres`;
     }
 
-    if (formData.description && formData.description.length > 500) {
-      newErrors.description = "La descripción no puede exceder 500 caracteres";
+    if (
+      formData.description &&
+      formData.description.length > DESCRIPTION_LIMIT
+    ) {
+      newErrors.description = `La descripción no puede exceder ${DESCRIPTION_LIMIT} caracteres`;
     }
 
     setErrors(newErrors);
@@ -38,6 +44,9 @@ const TaskForm = ({ task, onSave, onCancel, isOpen }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === "title" && value.length > TITLE_LIMIT) return;
+    if (name === "description" && value.length > DESCRIPTION_LIMIT) return;
+
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
@@ -126,7 +135,7 @@ const TaskForm = ({ task, onSave, onCancel, isOpen }) => {
                             : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                         }`}
                       placeholder="Ingrese el título de la tarea"
-                      maxLength={100}
+                      maxLength={TITLE_LIMIT}
                       required
                       disabled={isSubmitting}
                     />
@@ -135,8 +144,14 @@ const TaskForm = ({ task, onSave, onCancel, isOpen }) => {
                         {errors.title}
                       </p>
                     )}
-                    <p className="mt-1 text-sm text-gray-500">
-                      {formData.title.length}/100 caracteres
+                    <p
+                      className={`mt-1 text-sm ${
+                        formData.title.length >= TITLE_LIMIT
+                          ? "text-red-500"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      {formData.title.length}/{TITLE_LIMIT} caracteres
                     </p>
                   </div>
 
@@ -160,7 +175,7 @@ const TaskForm = ({ task, onSave, onCancel, isOpen }) => {
                             : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                         }`}
                       placeholder="Ingrese la descripción de la tarea"
-                      maxLength={500}
+                      maxLength={DESCRIPTION_LIMIT}
                       disabled={isSubmitting}
                     />
                     {errors.description && (
@@ -168,8 +183,15 @@ const TaskForm = ({ task, onSave, onCancel, isOpen }) => {
                         {errors.description}
                       </p>
                     )}
-                    <p className="mt-1 text-sm text-gray-500">
-                      {formData.description.length}/500 caracteres
+                    <p
+                      className={`mt-1 text-sm ${
+                        formData.description.length >= DESCRIPTION_LIMIT
+                          ? "text-red-500"
+                          : "text-gray-500"
+                      }`}
+                    >
+                      {formData.description.length}/{DESCRIPTION_LIMIT}{" "}
+                      caracteres
                     </p>
                   </div>
 
