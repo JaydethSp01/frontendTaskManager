@@ -66,27 +66,34 @@ const TaskForm = ({ task, onSave, onCancel, isOpen }) => {
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 overflow-y-auto z-50">
-          <div className="flex min-h-screen items-end justify-center sm:items-center sm:p-0">
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+        <div className="fixed inset-0 z-50 touch-none">
+          <div className="min-h-screen px-4 text-center">
+            <div className="fixed inset-0 bg-gray-700 bg-opacity-75 transition-opacity" />
 
-            <div className="relative transform overflow-hidden bg-white rounded-lg shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-              <div className="bg-white px-4 pb-4 pt-5 sm:p-6">
+            <span
+              className="inline-block h-screen align-middle"
+              aria-hidden="true"
+            >
+              &#8203;
+            </span>
+
+            <div className="inline-block w-full transform overflow-hidden rounded-lg bg-white text-left align-middle shadow-xl transition-all sm:my-8 sm:max-w-lg">
+              <div className="bg-white px-4 pt-5 pb-4 sm:p-6">
                 <div className="flex items-start justify-between">
                   <h3 className="text-lg font-semibold leading-6 text-gray-900">
                     {task ? "Editar Tarea" : "Nueva Tarea"}
                   </h3>
                   <button
                     onClick={onCancel}
-                    className="rounded-md bg-white text-gray-400 hover:text-gray-500"
+                    className="rounded-md p-2 text-gray-400 hover:text-gray-500"
                     disabled={isSubmitting}
                   >
                     <span className="sr-only">Cerrar</span>
                     <svg
-                      className="h-6 w-6"
+                      className="h-5 w-5"
                       fill="none"
                       viewBox="0 0 24 24"
-                      strokeWidth="1.5"
+                      strokeWidth="2"
                       stroke="currentColor"
                     >
                       <path
@@ -112,7 +119,7 @@ const TaskForm = ({ task, onSave, onCancel, isOpen }) => {
                       id="title"
                       value={formData.title}
                       onChange={handleChange}
-                      className={`mt-1 block w-full rounded-md shadow-sm 
+                      className={`mt-1 block w-full rounded-lg px-3 py-2 text-base
                         ${
                           errors.title
                             ? "border-red-300 focus:border-red-500 focus:ring-red-500"
@@ -146,7 +153,7 @@ const TaskForm = ({ task, onSave, onCancel, isOpen }) => {
                       rows={4}
                       value={formData.description}
                       onChange={handleChange}
-                      className={`mt-1 block w-full rounded-md shadow-sm 
+                      className={`mt-1 block w-full rounded-lg px-3 py-2 text-base
                         ${
                           errors.description
                             ? "border-red-300 focus:border-red-500 focus:ring-red-500"
@@ -172,16 +179,24 @@ const TaskForm = ({ task, onSave, onCancel, isOpen }) => {
                     </p>
                   )}
 
-                  <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
+                  <div className="mt-5 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                    <button
+                      type="button"
+                      onClick={onCancel}
+                      disabled={isSubmitting}
+                      className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 sm:w-auto"
+                    >
+                      Cancelar
+                    </button>
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 sm:col-start-2 disabled:opacity-50"
+                      className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 sm:w-auto"
                     >
                       {isSubmitting ? (
-                        <div className="flex items-center">
+                        <div className="flex items-center justify-center">
                           <svg
-                            className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                            className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 24 24"
@@ -205,14 +220,6 @@ const TaskForm = ({ task, onSave, onCancel, isOpen }) => {
                       ) : (
                         "Guardar"
                       )}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={onCancel}
-                      disabled={isSubmitting}
-                      className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0 disabled:opacity-50"
-                    >
-                      Cancelar
                     </button>
                   </div>
                 </form>

@@ -163,11 +163,10 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
       <Navbar onNewTask={handleNewTask} />
 
       <div className="container mx-auto flex flex-col gap-6 p-4 mb-20">
-        {/* Contenido de estadísticas */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-15">
           <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
             <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium">
