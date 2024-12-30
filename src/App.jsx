@@ -5,7 +5,7 @@ import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import Navbar from "./components/Layout/Navbar";
 import Footer from "./components/Layout/Footer";
-import { generateToken, isTokenExpired } from "./api/authApi";
+import { generateToken, isTokenExpired } from "./Api/authApi";
 import { ToastContainer } from "react-toastify";
 import "./styles/tailwind.css";
 import "react-toastify/dist/ReactToastify.css";
