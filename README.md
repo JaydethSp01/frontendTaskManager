@@ -58,7 +58,7 @@ Antes de comenzar, asegúrate de tener instalados los siguientes programas:
 Clona este repositorio en tu máquina local:
 
 ```bash
-git clone https://github.com/tu-usuario/TaskManagerFrontend.git
+git clone https://github.com/JaydethSp01/task-manager-backend.git
 ```
 
 2. **Instalar dependencias**
@@ -72,13 +72,11 @@ npm install
 
 3. **Configurar variables de entorno**
 
-Crea un archivo `.env` en la raíz del proyecto y define las siguientes variables:
+Crea un archivo `.env` en la raíz del proyecto y define la siguiente variable:
 
 ```env
-VITE_BACKEND_URL=http://localhost:3000/api
+VITE_BACKEND_URL=https://task-manager-backend-72rw.onrender.com/api
 ```
-
-Reemplaza `http://localhost:3000/api` con la URL del backend si es diferente.
 
 4. **Iniciar la aplicación**
 
