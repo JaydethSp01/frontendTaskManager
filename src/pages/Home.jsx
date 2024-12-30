@@ -26,11 +26,27 @@ const Home = () => {
   const [isFormVisible, setFormVisible] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [stats, setStats] = useState({
     total: 0,
     completed: 0,
     pending: 0,
   });
+
+  useEffect(() => {
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    // Comprobar inicialmente
+    checkIfMobile();
+
+    // Agregar listener para cambios de tamaño de ventana
+    window.addEventListener("resize", checkIfMobile);
+
+    // Cleanup
+    return () => window.removeEventListener("resize", checkIfMobile);
+  }, []);
 
   useEffect(() => {
     updateStats();
@@ -45,11 +61,38 @@ const Home = () => {
   };
 
   const handleDrop = async (taskId, newStatus) => {
+    if (isMobile) return; // No procesar drops en móvil
+
     setIsDragging(false);
     const completed = newStatus === "completed";
     setLoading(true);
     try {
       await updateTaskStatus(taskId, { status: newStatus, completed });
+      toast.success(
+        <div className="flex items-center gap-2">
+          <span className="text-green-500">✓</span>
+          Tarea movida a {newStatus}
+        </div>
+      );
+    } catch (error) {
+      toast.error(
+        <div className="flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-red-500" />
+          Error al mover la tarea
+        </div>
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleStatusChange = async (taskId, newStatus) => {
+    setLoading(true);
+    try {
+      await updateTaskStatus(taskId, {
+        status: newStatus,
+        completed: newStatus === "completed",
+      });
       toast.success(
         <div className="flex items-center gap-2">
           <span className="text-green-500">✓</span>
@@ -86,7 +129,7 @@ const Home = () => {
       } else {
         await addTask(task);
       }
-      setFormVisible(false); // Cerrar el formulario tras guardar
+      setFormVisible(false);
       toast.success(
         <div className="flex items-center gap-2">
           <span className="text-green-500">✓</span>
@@ -200,16 +243,20 @@ const Home = () => {
           {["pending", "completed"].map((status) => (
             <div
               key={status}
-              className={`w-full lg:w-1/2 backdrop-blur-lg rounded-xl overflow-hidden transition-all duration-300 ${
-                isDragging ? "ring-2 ring-blue-500 ring-opacity-50" : ""
+              className={`w-full lg:w-1/2 backdrop-blur-lg rounded-xl overflow-hidden ${
+                !isMobile && isDragging
+                  ? "ring-2 ring-blue-500 ring-opacity-50"
+                  : ""
               }`}
               onDrop={(e) => {
-                e.preventDefault();
-                handleDrop(e.dataTransfer.getData("taskId"), status);
+                if (!isMobile) {
+                  e.preventDefault();
+                  handleDrop(e.dataTransfer.getData("taskId"), status);
+                }
               }}
-              onDragOver={(e) => e.preventDefault()}
-              onDragEnter={() => setIsDragging(true)}
-              onDragLeave={() => setIsDragging(false)}
+              onDragOver={(e) => !isMobile && e.preventDefault()}
+              onDragEnter={() => !isMobile && setIsDragging(true)}
+              onDragLeave={() => !isMobile && setIsDragging(false)}
             >
               <div
                 className={`p-4 ${
@@ -244,6 +291,8 @@ const Home = () => {
                           task={task}
                           onEdit={handleEditTask}
                           onDelete={handleDeleteTask}
+                          onStatusChange={handleStatusChange}
+                          isMobile={isMobile}
                         />
                       ))}
                     {tasks.filter((task) =>
