@@ -69,13 +69,13 @@ const Home = () => {
   };
 
   const handleNewTask = () => {
-    setSelectedTask(null); // Limpiar la tarea seleccionada al agregar nueva
-    setFormVisible(true); // Mostrar el formulario
+    setSelectedTask(null);
+    setFormVisible(true);
   };
 
   const handleEditTask = (task) => {
-    setSelectedTask(task); // Establecer la tarea seleccionada para editar
-    setFormVisible(true); // Mostrar el formulario
+    setSelectedTask(task);
+    setFormVisible(true);
   };
 
   const handleSaveTask = async (task) => {
@@ -106,7 +106,7 @@ const Home = () => {
   };
 
   const handleCancel = () => {
-    setFormVisible(false); // Solo cerrar el formulario sin hacer nada más
+    setFormVisible(false);
   };
 
   const handleSearch = async (status) => {

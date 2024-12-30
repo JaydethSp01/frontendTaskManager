@@ -11,13 +11,61 @@ import {
 
 const TaskItem = ({ task, onEdit, onDelete }) => {
   const handleDragStart = (e) => {
-    e.dataTransfer.setData("taskId", task._id);
+    if (e.type === "touchstart") {
+      const touch = e.touches[0];
+      e.dataTransfer = {
+        setData: () => {},
+        getData: () => task._id,
+      };
+    } else {
+      e.dataTransfer.setData("taskId", task._id);
+    }
+  };
+
+  const handleTouchMove = (e) => {
+    e.preventDefault();
+    const touch = e.touches[0];
+    const element = document.elementFromPoint(touch.clientX, touch.clientY);
+    const dropzone = element?.closest(".dropzone");
+
+    document.querySelectorAll(".dropzone").forEach((el) => {
+      el.classList.remove("ring-2", "ring-blue-500", "ring-opacity-50");
+    });
+
+    if (dropzone) {
+      dropzone.classList.add("ring-2", "ring-blue-500", "ring-opacity-50");
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    e.preventDefault();
+    const touch = e.changedTouches[0];
+    const element = document.elementFromPoint(touch.clientX, touch.clientY);
+    const dropzone = element?.closest(".dropzone");
+
+    document.querySelectorAll(".dropzone").forEach((el) => {
+      el.classList.remove("ring-2", "ring-blue-500", "ring-opacity-50");
+    });
+
+    if (dropzone) {
+      const newStatus = dropzone.getAttribute("data-status");
+      const event = new CustomEvent("taskDrop", {
+        detail: {
+          taskId: task._id,
+          status: newStatus,
+        },
+      });
+      dropzone.dispatchEvent(event);
+    }
   };
 
   return (
     <div
-      draggable
+      draggable="true"
       onDragStart={handleDragStart}
+      onTouchStart={handleDragStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       className="group p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 ease-in-out transform hover:scale-102 border border-gray-100 dark:border-gray-700 mb-4"
     >
       <div className="flex items-start justify-between">
