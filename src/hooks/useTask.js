@@ -5,7 +5,7 @@ import {
   createTask,
   updateTask,
   deleteTask,
-} from "../api/tasksApi";
+} from "../Api/tasksApi";
 
 const useTask = () => {
   const {
