@@ -22,12 +22,15 @@ const Home = () => {
     updateTaskStatus,
     fetchTasksByStatus,
   } = useTask();
+
   const [selectedTask, setSelectedTask] = useState(null);
   const [isFormVisible, setFormVisible] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [stats, setStats] = useState({
+  const [activeStatus, setActiveStatus] = useState("all");
+  const [filteredTasks, setFilteredTasks] = useState([]);
+  const [globalStats, setGlobalStats] = useState({
     total: 0,
     completed: 0,
     pending: 0,
@@ -37,31 +40,84 @@ const Home = () => {
     const checkIfMobile = () => {
       setIsMobile(window.innerWidth <= 768);
     };
-
-    // Comprobar inicialmente
     checkIfMobile();
-
-    // Agregar listener para cambios de tamaño de ventana
     window.addEventListener("resize", checkIfMobile);
-
-    // Cleanup
     return () => window.removeEventListener("resize", checkIfMobile);
   }, []);
 
   useEffect(() => {
-    updateStats();
+    updateGlobalStats(tasks);
+    setFilteredTasks(tasks);
   }, [tasks]);
 
-  const updateStats = () => {
-    setStats({
-      total: tasks.length,
-      completed: tasks.filter((task) => task.completed).length,
-      pending: tasks.filter((task) => !task.completed).length,
+  const updateGlobalStats = (allTasks) => {
+    setGlobalStats({
+      total: allTasks.length,
+      completed: allTasks.filter((task) => task.completed).length,
+      pending: allTasks.filter((task) => !task.completed).length,
     });
   };
 
+  const handleStatClick = async (status) => {
+    setLoading(true);
+    try {
+      if (status === "total") {
+        setFilteredTasks(tasks);
+        setActiveStatus("all");
+      } else {
+        const filtered = tasks.filter((task) =>
+          status === "completed" ? task.completed : !task.completed
+        );
+        setFilteredTasks(filtered);
+        setActiveStatus(status);
+      }
+    } catch (error) {
+      toast.error(
+        <div className="flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 text-red-500" />
+          Error al filtrar las tareas
+        </div>
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const StatCard = ({ title, value, type }) => (
+    <div
+      onClick={() => handleStatClick(type)}
+      className={`bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 cursor-pointer 
+        ${
+          activeStatus === type
+            ? "ring-2 ring-blue-500 shadow-xl"
+            : "hover:shadow-xl"
+        }
+        ${
+          type === "total" && activeStatus === "all"
+            ? "ring-2 ring-blue-500 shadow-xl"
+            : ""
+        }
+      `}
+    >
+      <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium">
+        {title}
+      </h3>
+      <p
+        className={`text-3xl font-bold ${
+          type === "completed"
+            ? "text-green-600"
+            : type === "pending"
+            ? "text-orange-600"
+            : "text-gray-900 dark:text-white"
+        }`}
+      >
+        {value}
+      </p>
+    </div>
+  );
+
   const handleDrop = async (taskId, newStatus) => {
-    if (isMobile) return; // No procesar drops en móvil
+    if (isMobile) return;
 
     setIsDragging(false);
     const completed = newStatus === "completed";
@@ -156,6 +212,7 @@ const Home = () => {
     setLoading(true);
     try {
       await fetchTasksByStatus(status === "all" ? "" : status);
+      setActiveStatus(status);
     } catch (error) {
       toast.error(
         <div className="flex items-center gap-2">
@@ -205,49 +262,47 @@ const Home = () => {
     });
   };
 
+  const renderColumns = () => {
+    const columns = ["pending", "completed"];
+    return activeStatus === "all" ? columns : [activeStatus];
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
       <Navbar onNewTask={handleNewTask} />
 
       <div className="container mx-auto flex flex-col gap-6 p-4 mb-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-15">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
-            <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium">
-              Total Tareas
-            </h3>
-            <p className="text-3xl font-bold text-gray-900 dark:text-white">
-              {stats.total}
-            </p>
-          </div>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
-            <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium">
-              Completadas
-            </h3>
-            <p className="text-3xl font-bold text-green-600">
-              {stats.completed}
-            </p>
-          </div>
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
-            <h3 className="text-gray-500 dark:text-gray-400 text-sm font-medium">
-              Pendientes
-            </h3>
-            <p className="text-3xl font-bold text-orange-600">
-              {stats.pending}
-            </p>
-          </div>
+          <StatCard
+            title="Total Tareas"
+            value={globalStats.total}
+            type="total"
+          />
+          <StatCard
+            title="Completadas"
+            value={globalStats.completed}
+            type="completed"
+          />
+          <StatCard
+            title="Pendientes"
+            value={globalStats.pending}
+            type="pending"
+          />
         </div>
 
         <SearchBar onSearch={handleSearch} />
 
         <div className="flex flex-col lg:flex-row gap-6">
-          {["pending", "completed"].map((status) => (
+          {renderColumns().map((status) => (
             <div
               key={status}
-              className={`w-full lg:w-1/2 backdrop-blur-lg rounded-xl overflow-hidden ${
+              className={`w-full ${
+                activeStatus === "all" ? "lg:w-1/2" : ""
+              } backdrop-blur-lg rounded-xl overflow-hidden ${
                 !isMobile && isDragging
                   ? "ring-2 ring-blue-500 ring-opacity-50"
                   : ""
-              }`}
+              } transform transition-all duration-300`}
               onDrop={(e) => {
                 if (!isMobile) {
                   e.preventDefault();
@@ -279,7 +334,7 @@ const Home = () => {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {tasks
+                    {filteredTasks
                       .filter((task) =>
                         status === "completed"
                           ? task.completed
@@ -295,7 +350,7 @@ const Home = () => {
                           isMobile={isMobile}
                         />
                       ))}
-                    {tasks.filter((task) =>
+                    {filteredTasks.filter((task) =>
                       status === "completed" ? task.completed : !task.completed
                     ).length === 0 && (
                       <div className="flex flex-col items-center justify-center h-40 text-gray-500 dark:text-gray-400">
